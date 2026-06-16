@@ -1,0 +1,11 @@
+# Temporary files
+temp/
+*.log
+*.ps1
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
