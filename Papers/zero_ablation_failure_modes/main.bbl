@@ -1,0 +1,97 @@
+\begin{thebibliography}{13}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Biderman et~al.(2023)Biderman, Schoelkopf, Anthony,
+  et~al.]{Biderman2023}
+Stella Biderman, Hailey Schoelkopf, Quentin Anthony, et~al.
+\newblock {Pythia}: A suite for analyzing large language models across training
+  and scaling.
+\newblock In \emph{International Conference on Machine Learning (ICML)}, 2023.
+
+\bibitem[Chan et~al.(2022)Chan, Garriga-Alonso, Goldowsky-Dill, Greenblatt,
+  et~al.]{Chan2022}
+Lawrence Chan, Adri{\`a} Garriga-Alonso, Nicholas Goldowsky-Dill, Ryan
+  Greenblatt, et~al.
+\newblock Causal scrubbing: a method for rigorously testing interpretability
+  hypotheses.
+\newblock AI Alignment Forum, 2022.
+\newblock URL
+  \url{https://www.lesswrong.com/posts/JvZhhzycHu2Yd57RN/causal-scrubbing-a-method-for-rigorously-testing}.
+
+\bibitem[Conmy et~al.(2023)Conmy, Mayor-Parker, Lynch, Heimersheim, and
+  Garriga-Alonso]{Conmy2023}
+Arthur Conmy, Augustine~N. Mayor-Parker, Aengus Lynch, Stefan Heimersheim, and
+  Adri{\`a} Garriga-Alonso.
+\newblock Towards automated circuit discovery for mechanistic interpretability.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2023.
+
+\bibitem[Guo et~al.(2026)]{Guo2026}
+Yifeng Guo et~al.
+\newblock Beyond importance: Interchange-sobol sensitivity reveals
+  task-specific content channels in transformer components.
+\newblock \emph{arXiv preprint arXiv:2606.20678}, 2026.
+
+\bibitem[Heimersheim and Janiak(2023)]{HeimersheimJaniak2023}
+Stefan Heimersheim and Jett Janiak.
+\newblock A circuit for python docstrings in a 4-layer attention-only
+  transformer.
+\newblock AI Alignment Forum, 2023.
+\newblock URL
+  \url{https://www.alignmentforum.org/posts/u6KXkmKFbXWzoAXn/a-circuit-for-python-docstrings-in-a-4-layer-attention-only}.
+
+\bibitem[Kram\'{a}r et~al.(2024)Kram\'{a}r, Lieberum, Shah, and
+  Nanda]{Kramar2024}
+J\'{a}nos Kram\'{a}r, Tom Lieberum, Rohin Shah, and Neel Nanda.
+\newblock {AtP*}: An efficient and scalable method for localizing {LLM}
+  behaviour to components.
+\newblock Technical report, Google DeepMind, 2024.
+
+\bibitem[Li and Janson(2024)]{LiJanson2024}
+Maximilian Li and Lucas Janson.
+\newblock Optimal ablation for interpretability.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2024.
+\newblock Spotlight.
+
+\bibitem[Liu and Zhang(2025)]{Liu2025}
+Dong Liu and Caihuan Zhang.
+\newblock Beyond ablation: A taxonomy of interventions for mechanistic
+  interpretability.
+\newblock \emph{arXiv preprint}, 2025.
+\newblock Under review.
+
+\bibitem[Meng et~al.(2022)Meng, Bau, Andonian, and Belinkov]{Meng2022}
+Kevin Meng, David Bau, Alex Andonian, and Yonatan Belinkov.
+\newblock Locating and editing factual associations in {GPT}.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2022.
+
+\bibitem[Miller et~al.(2024)Miller, Chughtai, and Saunders]{Miller2024}
+Joseph Miller, Bilal Chughtai, and William Saunders.
+\newblock Transformer circuit faithfulness metrics are not robust.
+\newblock In \emph{Conference on Language Modeling (CoLM)}, 2024.
+
+\bibitem[Nanda et~al.(2023)Nanda, Chan, Lieberum, et~al.]{Nanda2023}
+Neel Nanda, Lawrence Chan, Tom Lieberum, et~al.
+\newblock Progress measures for grokking via mechanistic interpretability.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2023.
+
+\bibitem[Pochinkov et~al.(2024)Pochinkov, Pasero, and Shibayama]{Pochinkov2024}
+Nicholas Pochinkov, Ben Pasero, and Skylar Shibayama.
+\newblock Investigating neuron ablation in attention heads: The case for peak
+  activation centering.
+\newblock In \emph{XAI World Conference (Late-Breaking Work)}, 2024.
+
+\bibitem[Wang et~al.(2022)Wang, Variengien, Conmy, et~al.]{Wang2022}
+Kevin Wang, Alexandre Variengien, Arthur Conmy, et~al.
+\newblock Interpretability in the wild: a circuit for indirect object
+  identification in {GPT}-2.
+\newblock \emph{arXiv preprint arXiv:2211.00593}, 2022.
+
+\end{thebibliography}
