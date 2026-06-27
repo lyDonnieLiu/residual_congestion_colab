@@ -1,42 +1,31 @@
-% Zero Ablation的两个失效模式
-% arXiv + TMLR目标
-\documentclass[11pt,a4paper]{article}
+% 投稿目标: Applied Intelligence (Springer Nature)
+\documentclass[pdflatex,sn-mathphys-num]{sn-jnl}
 
-\usepackage[hmargin=2.5cm,vmargin=2.5cm]{geometry}
-\usepackage{times}
-\usepackage{amsmath,amssymb}
-\usepackage[numbers,sort&compress]{natbib}
-\usepackage[hidelinks]{hyperref}
-\usepackage{graphicx}
-\usepackage{booktabs}
-\usepackage{multirow}
-\usepackage{caption}
-\usepackage{algorithm,algpseudocode}
+%%%% 标准包
+\usepackage{graphicx}%
+\usepackage{multirow}%
+\usepackage{amsmath,amssymb}%
+\usepackage{booktabs}%
+\usepackage{algorithm}%
+\usepackage{algorithmicx}%
+\usepackage{algpseudocode}%
+%%%%
 
 \newcommand{\method}[1]{\textsc{#1}}
 \newcommand{\mdi}{\textit{MDI}}
 \newcommand{\aps}{\textit{APS}}
 
-\title{\vspace{-1cm}
-Two Failure Modes of Zero Ablation:\\
-Representational Damage and Measurement Saturation
-}
+\title[Two Failure Modes of Zero Ablation]{Two Failure Modes of Zero Ablation:\\Representational Damage and Measurement Saturation}
 
-\author{
-Dong Liu$^{a,}$\textsuperscript{*}$\;$\textsuperscript{,}$\;$Caihuan Zhang$^{b}$ \\
-$^{a}$School of Software, Luoyang Normal University, Luoyang, Henan 471934, China \\
-$^{b}$School of Mathematics, Luoyang Normal University, Luoyang, Henan 471934, China \\
-$^{*}$Corresponding author. \texttt{liudong@lynu.edu.cn}
-}
+\author*[1]{\fnm{Dong} \sur{Liu}}\email{liudong@lynu.edu.cn}
+\author[2]{\fnm{Caihuan} \sur{Zhang}}
+
+\affil*[1]{\orgdiv{School of Software}, \orgname{Luoyang Normal University}, \orgaddress{\city{Luoyang}, \state{Henan}, \postcode{471934}, \country{China}}}
+\affil[2]{\orgdiv{School of Mathematics}, \orgname{Luoyang Normal University}, \orgaddress{\city{Luoyang}, \state{Henan}, \postcode{471934}, \country{China}}}
 
 \begin{document}
+
 \maketitle
-
-\begin{abstract}
-Zero ablation -- replacing a component's output with zeros -- remains a widely used tool for estimating component importance in mechanistic interpretability. This paper diagnoses why zero ablation produces unreliable rankings. Through controlled experiments on three standard circuits (IOI, Greater-Than, Docstring) in Pythia-1.4B, we identify two distinct failure modes. First, \textbf{representational damage} (early layers): zero ablation destroys the activation distribution, as captured by Activation Preservation Score (APS). Second and more fundamentally, \textbf{measurement saturation} (all layers): zero ablation's behavioral measure peaks at ceiling ($\approx 1.0$) across virtually all layers, producing only 2--3 unique values across 24 layers. This saturation occurs even where APS is near-perfect (e.g., IOI Layer~11: APS=0.996, behavioral drop=1.0), meaning the diagnosis cannot be remedied by representational health metrics alone.
-
-We formalize this insight through the \textbf{Measurement Discrimination Index (MDI)}, a simple diagnostic that quantifies a method's ability to differentiate between components. Zero ablation achieves MDI $<0.001$ in two of three circuits, indicating effectively no discriminatory power. The consequence is not merely noise in ranking but systematic distortion: in the IOI circuit, zero ablation's top-5 important layers have \emph{zero overlap} (Jaccard=0.00) with those identified by mean ablation or activation steering. We conclude that zero ablation's rankings should not be interpreted without a discrimination check, and we propose MDI as a lightweight pre-check for any component importance study.
-\end{abstract}
 
 \section{Introduction}
 
@@ -50,12 +39,12 @@ This paper tests that assumption and finds it incomplete. Through layer-by-layer
 
 \begin{enumerate}
     \item \textbf{Representational damage (APS-visible).} In early layers (0--4), zero ablation collapses the activation distribution: APS drops below 0.8, confirming that the intervention destroys the representational structure before task-relevant computation begins.
-    \item \textbf{Measurement saturation (APS-invisible).} In all layers, zero ablation's behavioral measure saturates at ceiling (behavioral drop $\approx 1.0$). In the IOI circuit, zero ablation produces only 3 unique behavioral drop values across 24 layers; in Greater-Than, only 2. This saturation occurs even where APS exceeds 0.99 (e.g., IOI Layer~11).
+    \item \textbf{Measurement saturation (APS-invisible).} In all layers, zero ablation's behavioral measure saturates near ceiling (behavioral drop $> 0.99$). In the IOI circuit, zero ablation produces only 15 unique behavioral drop values across 24 layers; in Greater-Than, only 13. This saturation occurs even where APS exceeds 0.99 (e.g., IOI Layer~11).
 \end{enumerate}
 
 The two modes have different implications. Representational damage is localized (early layers) and detectable by existing metrics. Measurement saturation is pervasive and undermines the very concept of ranking: a method that assigns the same score to every component cannot produce a meaningful ranking, regardless of how individually precise each measurement is.
 
-To operationalize this diagnosis, we propose the \textbf{Measurement Discrimination Index (MDI)}, a simple composite of a method's dynamic range and granularity. A method with MDI near zero, like zero ablation in IOI (MDI $< 0.001$), has no discriminatory power and its rankings should not be interpreted.
+To operationalize this diagnosis, we propose the \textbf{Measurement Discrimination Index (MDI)}, a simple composite of a method's dynamic range and granularity. A method with MDI near zero, like zero ablation on IOI and Greater-Than (MDI $< 0.003$), has negligible discriminatory power and its rankings should not be interpreted.
 
 Our contributions are:
 \begin{enumerate}
@@ -104,7 +93,7 @@ We compare six intervention methods across all 24 layers:
     \item \method{Zero Ablation}: replace the layer output with zeros.
     \item \method{Mean Ablation}: replace with the mean activation across training examples.
     \item \method{Resample Ablation}: replace with activations from a randomly selected different input.
-    \item \method{Gaussian Noise Injection}: add Gaussian noise ($\sigma=1.0$) to the output.
+    \item \method{Gaussian Noise Injection}: add Gaussian noise ($\sigma=0.1$) to the output.
     \item \method{Activation Patching}: replace with the activation from a corrupted input.
     \item \method{Activation Steering}: add a steering vector along a task-relevant direction.
 \end{itemize}
@@ -134,7 +123,9 @@ MDI $\in [0, 1]$. We suggest MDI $< 0.1$ as a threshold indicating insufficient 
 
 \subsection{Analysis 1: Zero Ablation Exhibits Near-Zero Discrimination}
 
-Table~\ref{tab:mdi} reports MDI for each method across all three circuits. Zero ablation achieves MDI of effectively zero on IOI and Greater-Than ($< 0.001$), meaning it cannot differentiate between layers at all. On Docstring, zero ablation's MDI is marginally higher ($0.021$) but still two orders of magnitude below gentle methods.
+Table~\ref{tab:mdi} reports MDI for each method across all three circuits. Zero ablation achieves MDI of effectively zero on IOI ($0.0029$) and Greater-Than ($0.0019$), meaning it cannot meaningfully differentiate between layers. On Docstring, zero ablation's MDI is higher ($0.1049$) but still an order of magnitude below gentle methods like mean ablation ($0.8930$) and activation patching ($0.8473$).
+
+Notably, resample ablation -- once correctly implemented with held-out prompts -- achieves high MDI ($0.83$--$0.99$) comparable to mean ablation and patching, confirming that the resample baseline is a gentle intervention when properly executed. Activation steering, by contrast, exhibits surprisingly low MDI ($0.02$--$0.06$) across all three circuits. This reflects the fact that a contrastive difference-in-means direction applied at a single layer produces a very weak behavioral effect, barely perturbing the model's output regardless of the layer targeted.
 
 \begin{table}[t]
 \centering
@@ -144,17 +135,17 @@ Table~\ref{tab:mdi} reports MDI for each method across all three circuits. Zero 
 \toprule
 Method & IOI & Greater-Than & Docstring \\
 \midrule
-Zero Ablation & $\mathbf{0.0000}$ & $\mathbf{0.0000}$ & $\mathbf{0.0209}$ \\
-Resample Ablation & $\mathbf{0.0000}$ & $\mathbf{0.0000}$ & $\mathbf{0.0000}$ \\
-Activation Steering & 0.5136 & 0.5081 & 0.6058 \\
-Mean Ablation & 0.6830 & 0.3912 & 0.7959 \\
-Activation Patching & 0.6830 & 0.3912 & 0.7541 \\
-Gaussian Noise & 0.8694 & 0.9261 & 0.9386 \\
+Zero Ablation & $\mathbf{0.0029}$ & $\mathbf{0.0019}$ & $0.1049$ \\
+Activation Steering & $\mathbf{0.0311}$ & $\mathbf{0.0227}$ & $\mathbf{0.0554}$ \\
+Mean Ablation & 0.9966 & 0.7579 & 0.8930 \\
+Resample Ablation & 0.9975 & 0.8270 & 0.8960 \\
+Gaussian Noise & 0.9944 & 0.9915 & 0.9619 \\
+Activation Patching & 0.9872 & 0.8486 & 0.8473 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The source of zero ablation's low MDI is clear from the per-layer data. In IOI, zero ablation produces a behavioral drop of $0.9998$--$1.0000$ across \emph{all} 24 layers -- only 3 distinct values in total. Meanwhile, mean ablation's behavioral drop ranges from $0.0$ to $0.98$, producing 17 unique values across the same layers.
+The source of zero ablation's low MDI is clear from the per-layer data. In IOI, zero ablation produces a behavioral drop of $0.995$--$1.000$ across \emph{all} 24 layers -- only 15 distinct values at $10^{-4}$ precision. In Greater-Than, the situation is worse: only 13 distinct values. Meanwhile, mean ablation's behavioral drop ranges from $0.0$ to $0.76$--$0.99$ depending on circuit, producing 24 unique values across the same layers.
 
 \begin{figure}[t]
     \centering
@@ -165,15 +156,15 @@ The source of zero ablation's low MDI is clear from the per-layer data. In IOI, 
 
 \subsection{Analysis 2: Measurement Saturation Is Not Explainable by Representational Damage}
 
-Figure~\ref{fig:aps_rank} plots zero ablation's rank against its APS for each layer. If representational damage (low APS) were the sole cause of zero ablation's failure, we would expect lower APS to correlate with higher (more distorted) rank. Instead, zero ablation's rank is essentially constant (rank~6 out of~6 for all layers in IOI and Docstring, indicating that every layer is assigned the maximum possible importance).
+Figure~\ref{fig:aps_rank} plots zero ablation's rank against its APS for each layer. If representational damage (low APS) were the sole cause of zero ablation's failure, we would expect lower APS to correlate with lower (more distorted) rank. Instead, zero ablation assigns nearly-maximum importance to \emph{every} layer: behavioral drop exceeds $0.99$ across all 24 layers in IOI and Greater-Than, regardless of APS.
 
-Crucially, in IOI Layer~11 -- where the IOI circuit's key processing occurs according to gentle methods -- zero ablation achieves APS $= 0.996$ (near-perfect distribution preservation) but still produces behavioral drop $= 1.000$ and rank $= 6$ (maximum importance). This cleanly separates the two failure modes: representational damage is absent at this layer (APS is high), but measurement saturation is in full effect (behavioral drop saturates at ceiling). \emph{No representational health metric can detect or correct this failure mode.}
+Crucially, in IOI Layer~11 -- where the IOI circuit's key processing occurs according to gentle methods -- zero ablation achieves APS $= 0.996$ (near-perfect distribution preservation) but still produces behavioral drop $= 0.995$ (near-ceiling). This cleanly separates the two failure modes: representational damage is absent at this layer (APS is high), but measurement saturation is in full effect (behavioral drop saturates near ceiling). \emph{No representational health metric can detect or correct this failure mode.}
 
 \subsection{Analysis 3: Methods Without Discrimination Produce Unreliable Rankings}
 
-The relationship between MDI and cross-method agreement is informative. Methods with MDI $< 0.1$ (zero ablation, resample ablation) exhibit negative or near-zero average Kendall tau with other methods ($\tau_{\text{avg}} = -0.197$ and $-0.092$, respectively). This means their rankings are not just noisy but anti-correlated with methods that do discriminate.
+The relationship between MDI and cross-method agreement is informative. Methods with MDI $< 0.1$ (zero ablation, activation steering) exhibit low or near-zero average Kendall tau with high-MDI methods ($\tau_{\text{avg}} = -0.064$ and $+0.012$, respectively). This means their rankings are essentially uncorrelated with methods that do discriminate.
 
-Gentle methods (mean ablation, activation patching, activation steering) with MDI $> 0.3$ show positive average tau with each other ($\tau_{\text{avg}} = +0.084$ to $+0.096$). While this agreement is imperfect, it demonstrates at least a shared signal that low-MDI methods lack.
+Gentle methods (mean ablation, resample ablation, activation patching) with MDI $> 0.1$ show moderate-to-high pairwise agreement ($\tau = 0.76$--$0.95$). While this agreement is not perfect, it demonstrates a shared signal that low-MDI methods lack. Activation steering is a special case: its low MDI stems not from destructive saturation but from genuinely weak perturbation -- each layer's steering effect is small and similar, making it an ineffective ranking tool despite being methodologically non-destructive.
 
 \subsection{Analysis 4: Practical Impact on Research Conclusions}
 
@@ -181,30 +172,30 @@ The practical consequence of zero ablation's measurement saturation is not merel
 
 \begin{table}[t]
 \centering
-\caption{Top-5 layers identified by each method. The Jaccard similarity between zero ablation and gentle methods is strikingly low, indicating that conclusions about which layers matter depend entirely on the intervention method chosen.}
+\caption{Top-5 layers identified by each method. In Greater-Than and Docstring, the Jaccard similarity between zero ablation and gentle methods is zero, indicating completely disjoint layer sets.}
 \label{tab:impact}
 \begin{tabular}{llll}
 \toprule
 Circuit & Method & Top-5 Layers & APS at Top-5 \\
 \midrule
-\multirow{3}{*}{IOI} & Zero Ablation & L6, L7, L10, L2, L8 & {[}1.00, 0.87, 1.00, 0.72, 1.00{]} \\
- & Mean Ablation & L23, L15, L22, L16, L21 & {[}0.99, 1.00, 1.00, 1.00, 1.00{]} \\
- & Activation Steering & L23, L22, L21, L20, L19 & {[}1.00, 1.00, 1.00, 1.00, 1.00{]} \\
+\multirow{3}{*}{IOI} & Zero Ablation & L2, L3, L7, L17, L20 & {[}0.87, 1.00, 0.74, 0.71, 0.99{]} \\
+ & Mean Ablation & L19, L20, L21, L22, L23 & {[}0.99, 1.00, 1.00, 1.00, 1.00{]} \\
+ & Activation Patching & L14, L15, L16, L22, L23 & {[}0.99, 1.00, 1.00, 1.00, 1.00{]} \\
 \midrule
-\multirow{3}{*}{Greater-Than} & Zero Ablation & L2, L20, L17, L6, L18 & {[}0.60, 0.98, 0.99, 1.00, 1.00{]} \\
- & Mean Ablation & L22, L23, L21, L17, L18 & {[}1.00, 0.94, 1.00, 1.00, 1.00{]} \\
- & Activation Steering & L22, L23, L21, L17, L16 & {[}1.00, 0.97, 1.00, 1.00, 1.00{]} \\
+\multirow{3}{*}{Greater-Than} & Zero Ablation & L2, L4, L5, L6, L7 & {[}0.72, 0.86, 1.00, 0.99, 0.99{]} \\
+ & Mean Ablation & L19, L20, L21, L22, L23 & {[}0.98, 1.00, 1.00, 1.00, 1.00{]} \\
+ & Activation Patching & L19, L20, L21, L22, L23 & {[}0.99, 1.00, 1.00, 1.00, 1.00{]} \\
 \midrule
-\multirow{3}{*}{Docstring} & Zero Ablation & L20, L7, L21, L6, L3 & {[}0.99, 0.84, 1.00, 1.00, 0.73{]} \\
- & Mean Ablation & L23, L22, L21, L20, L19 & {[}1.00, 1.00, 1.00, 1.00, 1.00{]} \\
- & Activation Steering & L23, L22, L21, L20, L19 & {[}1.00, 1.00, 1.00, 1.00, 1.00{]} \\
+\multirow{3}{*}{Docstring} & Zero Ablation & L3, L8, L9, L12, L17 & {[}1.00, 0.73, 0.70, 1.00, 1.00{]} \\
+ & Mean Ablation & L19, L20, L21, L22, L23 & {[}0.99, 1.00, 1.00, 1.00, 1.00{]} \\
+ & Activation Patching & L19, L20, L21, L22, L23 & {[}1.00, 1.00, 1.00, 1.00, 1.00{]} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-In the IOI circuit, the Jaccard similarity between zero ablation's top-5 and mean ablation's top-5 is exactly $0.00$: they identify completely disjoint sets of layers. Zero ablation selects early-to-mid layers (L2, L6, L7, L8, L10), while mean ablation and steering both select late layers (L15--L23, consistent with the known IOI circuit literature \citep{Wang2022}). A researcher who relied only on zero ablation would conclude that IOI's critical computation happens in layers 2--10; a researcher using mean ablation would place it in layers 15--23. These are not different framings of the same finding -- they are contradictory conclusions.
+In Greater-Than and Docstring, the Jaccard similarity between zero ablation's top-5 and mean ablation's top-5 is exactly $0.00$: they identify completely disjoint sets of layers. Zero ablation selects early-to-mid layers (L2--L7 for Greater-Than, L3--L17 for Docstring), while mean ablation and patching both converge on late layers (L19--L23, consistent with the known circuits literature \citep{Wang2022,Nanda2023}). A researcher who relied only on zero ablation would draw fundamentally different conclusions about where the critical computation occurs.
 
-The pattern repeats in Greater-Than (zero ablation includes L2 in its top-5, a layer where APS is only 0.60 and the circuit is known not to be active) and Docstring (zero ablation includes L3, L6, and L7, while gentle methods converge unanimously on L19--L23).
+In IOI, the overlap is marginal (Jaccard $= 0.11$, with one shared layer L20), but zero ablation's top-5 still selects substantially earlier layers (L2--L7) than gentle methods (L14--L23). The pattern remains that zero ablation's rankings are systematically shifted toward early layers where APS is lower, consistent with representational damage amplifying the apparent importance of those layers.
 
 \section{Discussion}
 
@@ -212,11 +203,11 @@ The pattern repeats in Greater-Than (zero ablation includes L2 in its top-5, a l
 
 A common response to method disagreement is that each intervention method answers a different causal question \citep{Miller2024}. Under this framing, zero ablation asks ``is this component necessary?'' while mean ablation asks ``is this component robust?'' Different answers are expected because the questions differ.
 
-Our results challenge this framing. Zero ablation's behavioral drop saturates at $\approx 1.0$ in essentially every layer, meaning it answers ``is this component necessary?'' with ``yes'' for \emph{all} components. This is not a different answer -- it is an uninformative one. A method that returns the same value for every component, regardless of whether the component participates in the circuit, is not answering a different question; it is failing to discriminate.
+Our results challenge this framing. Zero ablation's behavioral drop saturates above $0.99$ in essentially every layer, meaning it answers ``is this component necessary?'' with ``effectively yes'' for \emph{all} components. This is not a different answer -- it is an uninformative one. A method that returns near-maximum importance for every component, regardless of whether the component participates in the circuit, is not answering a different question; it is failing to discriminate.
 
 \subsection{The Role of APS and Other Representational Metrics}
 
-APS was introduced as a diagnostic for detecting when an intervention disrupts the activation distribution. Our results confirm that APS successfully identifies representational damage in early layers. However, APS does not detect measurement saturation: in IOI Layer~11, APS registers $0.996$ while behavioral drop is at ceiling. This means that representational health metrics are necessary but not sufficient for method evaluation: they catch one failure mode but not the other.
+APS was introduced as a diagnostic for detecting when an intervention disrupts the activation distribution. Our results confirm that APS successfully identifies representational damage in early layers. However, APS does not detect measurement saturation: in IOI Layer~11, APS registers $0.996$ while behavioral drop is $0.995$ (near ceiling). This means that representational health metrics are necessary but not sufficient for method evaluation: they catch one failure mode but not the other.
 
 This finding resolves an open question from our prior work: can APS arbitrate between disagreeing methods? The answer is partly no -- if the disagreement stems from measurement saturation (as it does with zero ablation), APS has no diagnostic power because the saturation is not reflected in the activation distribution.
 
@@ -228,7 +219,7 @@ We emphasize that MDI is a necessary condition for meaningful rankings, not a su
 
 \subsection{Limitations and Future Work}
 
-This study is limited to Pythia-1.4B. While the measurement saturation pattern is consistent across three diverse circuits, cross-model validation is needed. The MDI threshold of $< 0.1$ is empirically motivated by our data; a principled derivation would strengthen the framework.
+This study focuses on Pythia-1.4B. Preliminary cross-model validation on GPT-2 Small (124M, 12 layers) confirms the same qualitative patterns: zero ablation saturates across all layers (MDI $< 0.003$ on IOI and Greater-Than), and its top-5 layers disagree with gentle methods. However, systematic scaling across model families and sizes remains future work. The MDI threshold of $< 0.1$ is empirically motivated by our data; a principled derivation would strengthen the framework.
 
 Future work should investigate whether measurement saturation generalizes to larger models and different model families. A systematic survey of published MI results to check which claims would survive an MDI pre-check would be a valuable community contribution. Additionally, the relationship between MDI and other method quality properties (e.g., computational cost, faithfulness) warrants further study.
 
@@ -239,15 +230,15 @@ Based on our findings, we recommend:
 \begin{enumerate}
     \item \textbf{Report MDI alongside importance rankings.} This allows readers to assess whether the intervention method can meaningfully distinguish between components.
     \item \textbf{Avoid relying on zero ablation alone for ranking.} Its behavioral measure saturates at ceiling in all three circuits tested.
-    \item \textbf{Use multiple methods and report convergence.} In our data, mean ablation, activation patching, and activation steering show moderate agreement ($\tau > 0.9$ between any pair); methods that agree are more trustworthy.
+    \item \textbf{Use multiple methods and report convergence.} In our data, mean ablation, resample ablation, and activation patching show high agreement ($\tau > 0.85$); methods that agree are more trustworthy. Activation steering and Gaussian noise, despite being gentle, produce unreliable rankings due to weak perturbation and irrelevant signal, respectively.
     \item \textbf{Include representational health metrics.} APS detects representational damage even when behavioral measures are saturated, providing complementary information.
 \end{enumerate}
 
 \section{Conclusion}
 
-Zero ablation has two distinct failure modes. Representational damage (early layers) is visible to APS and can be diagnosed with existing tools. Measurement saturation (all layers) is invisible to representational metrics and undermines the concept of ranking itself: a method that produces only 2--3 unique values across 24 layers cannot produce a meaningful ranking, regardless of how precise its individual measurements are.
+Zero ablation has two distinct failure modes. Representational damage (early layers) is visible to APS and can be diagnosed with existing tools. Measurement saturation (all layers) is invisible to representational metrics and undermines the concept of ranking itself: a method that produces only 13--15 unique behavioral drop values across 24 layers (compared to 24/24 for gentle methods) cannot produce a meaningful ranking, regardless of how precise its individual measurements are.
 
-We propose MDI as a lightweight diagnostic that captures both dynamic range and granularity. Applying MDI to our data reveals that zero ablation and resample ablation have effectively zero discrimination in IOI and Greater-Than circuits. The practical impact is severe: in IOI, zero ablation's top-5 layers have zero overlap with gentle methods' top-5, meaning the research conclusions depend entirely on which intervention method is chosen.
+We propose MDI as a lightweight diagnostic that captures both dynamic range and granularity. Applying MDI to our data reveals that zero ablation has effectively zero discrimination on IOI and Greater-Than circuits. The practical impact is severe: in Greater-Than and Docstring, zero ablation's top-5 layers have zero overlap with gentle methods' top-5, meaning the research conclusions depend entirely on which intervention method is chosen. Resample ablation, when correctly implemented, exhibits high MDI and agrees with mean ablation and activation patching, confirming that not all ablation variants suffer from measurement saturation.
 
 The MI community should adopt routine MDI reporting as a standard methodological practice, analogous to reporting effect sizes or confidence intervals. A method that cannot discriminate cannot rank.
 
@@ -255,7 +246,6 @@ The MI community should adopt routine MDI reporting as a standard methodological
 
 The authors thank the anonymous expert reviewer whose adversarial critique of the ``APS-as-arbitrator'' framework led to the data-driven discovery of measurement saturation.
 
-\bibliographystyle{plainnat}
-\bibliography{references}
+\bibliography{references}% sn-jnl 自动使用 sn-mathphys-num.bst 样式
 
 \end{document}
